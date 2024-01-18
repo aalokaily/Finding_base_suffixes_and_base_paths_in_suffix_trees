@@ -30,102 +30,91 @@ return (str(self.idx) + "-" + str(self.depth))
 Firstly, you need to convert the genome in fasta format to a one-line genome. This converting removes any non A, C, G, T, and N (case is sensitive) and headers from the FASTA file. This can be done using the script filter_DNA_file_to_4_bases_and_N.py by running the command:
 
 ```python
-python3 Convert_fasta_file_to_4_bases_and_N.py $file.fasta > converted_fasta_file.DNA
+python3 convert_fasta_file_to_one_line_file $file.fasta > converted_fasta_file.oneline
 ```
------------------------------------------------------------ Running the tool -----------------------------------------------------------
+----------------------------------------------------------- Running algorithms for finding base suffixes -----------------------------------------------------------
 
 The input for the tools is the converted fasta file. These tools are applicable for Hamming distance and Wildcards matching. Edit distance to be implemented.  
 
 Running command:
 ```python
-python3 {OT_index_script}.py converted_fasta_file.DNA k pattern 
-```
-
-- OT_index_script can be ET_using_base_paths.py or ET_using_base_suffixes.py.
-- k value must be an integer.
-- Pattern can be any sequence (for wildcards matching use a non {A,C,G,T,N} character).
-
-As an example:
-```python
-python3 ET_using_base_paths.py converted_fasta_file.DNA 3 AAAAAAAAAAAAAAAAAAA
+python3 Finding_base_suffixes.py converted_fasta_file.oneline
 ```
 
 A sample output:
 ```
-Length of pattern 19
-Reading input data took 0.00014 seconds
+Building Suffix Tree
+Finished in 0.40969 seconds
 ------------------------------------------------------------------------------------------
-Building Suffix Tree took 0.41792 seconds
+Processing leaf and internal nodes
+Number of leaf nodes is 47,961
+Number of internal nodes is 31,627
+Number of alphabets in the input data 15
+Finished in 0.35694 seconds
 ------------------------------------------------------------------------------------------
-Number of internal nodes is 31627
-Number of leaves is 47961
-Processing leaf and internal nodes took 0.63112 seconds
+Finding base suffixes using the linear algorithm
+Number of OSHR leaf_nodes is 12,029
+Number of OSHR internal nodes is 19,598
+Total number of base suffixes 47,961
+Total time cost: 226,179
+Finished in 0.26442 seconds
 ------------------------------------------------------------------------------------------
-
-***** Phase 1 for finding base suffixes finished in 0.46034 seconds
-Length of OT index  426695
-Left and right OT index of root 0 426695
-
-***** Phase 2 for building OT index using base suffixes finished in 0.79204 seconds
-Building OT index using base suffixes took 1.25245 seconds
-------------------------------------------------------------------------
-Approximate matchings for k value of  1
-------------------------------------------------------------------------
-GAAAAAAAAAAAAAAAAAA 1 [0] 157 leaf node
-AGAAAAAAAAAAAAAAAAA 1 [1] 156 leaf node
-AAGAAAAAAAAAAAAAAAA 1 [2] 155 leaf node
-AAAGAAAAAAAAAAAAAAA 1 [3] 154 leaf node
-AAAAAAAAAAAAAAAAAAT 1 [18] 184 leaf node
-
-Number of matchings is 5
-Number of position_combinations in the results 5
-Number of expected combinations 19
-All matching_results is with a distance equal to 1 as should be
-All mismatches positions is equal to 1 as should be
-------------------------------------------------------------------------
-Approximate matchings for k value of  2
-------------------------------------------------------------------------
-TAAAGAAAAAAAAAAAAAA 2 [0, 4] 153 leaf node
-AAAAAAAAAAAAAAAAATG 2 [17, 18] 185 leaf node
-
-Number of matchings is 2
-Number of position_combinations in the results 2
-Number of expected combinations 171
-All matching_results is with a distance equal to 2 as should be
-All mismatches positions is equal to 2 as should be
-------------------------------------------------------------------------
-Approximate matchings for k value of  3
-------------------------------------------------------------------------
-TTAAAGAAAAAAAAAAAAA 3 [0, 1, 5] 152 leaf node
-TAAAAAAATAAAAAAATAA 3 [0, 8, 19] 14975 leaf node
-ATTAAAGAAAAAAAAAAAA 3 [1, 2, 6] 151 leaf node
-ATAATAAAAAAAGAAAAAA 3 [1, 4, 13] 38898 leaf node
-ATAAAAATAAAAATAAAAA 3 [1, 7, 13] 19781
-ATAAAAATAAAAATAAAAA 3 [1, 7, 13] 19775
-AATTAAAAAAAAAAACAAA 3 [2, 3, 19] 525 leaf node
-AATAATAAAAAAAGAAAAA 3 [2, 5, 14] 38897 leaf node
-AATAAAAATAAAAATAAAA 3 [2, 8, 14] 19780 leaf node
-AAATTAAAAAAAAAAACAA 3 [3, 4, 20] 524 leaf node
-AAATAATAAAAAAAGAAAA 3 [3, 6, 17] 38896 leaf node
-AAATAAAAATAAAAATAAA 3 [3, 9, 15] 19779 leaf node
-AAAATAAAAATAAAAATAA 3 [4, 10, 16] 19778 leaf node
-AAAATAAAAATAAAAACAA 3 [4, 10, 16] 19784 leaf node
-AAAAATAAAAATAAAAATA 3 [5, 11, 17] 19777 leaf node
-AAAAATAAAAATAAAAACA 3 [5, 11, 17] 19783 leaf node
-AAAAATAAAAAAGAAAGAA 3 [5, 12, 18] 47350 leaf node
-AAAAAATAAAAAAGAAAGA 3 [6, 13, 19] 47349 leaf node
-AAAAAAATAAAAAAATAAT 3 [7, 17, 20] 14976 leaf node
-AAAAAAAAAAAAAAATGTA 3 [15, 16, 17] 187 leaf node
-AAAAAAAAAAAAAAAATGT 3 [16, 17, 18] 186 leaf node
-
-Number of matchings is 21
-Number of position_combinations in the results 18
-Number of expected combinations 969
-All matching_results is with a distance equal to 3 as should be
-All mismatches positions is equal to 3 as should be
-Found approximate matching for 1 <= k <= 3 in  0.12331 seconds
+Finding and checking base suffixes using the non-trivial algorithm 1 and O(n) space (hash-table)
+=== All base suffixes at each internal nodes in ST are as expected ===
+Total time cost: 517,853
+Finished in 0.26787 seconds
+------------------------------------------------------------------------------------------
+Finding and checking base suffixes using the non-trivial algorithm 2 with additional log(Sigma) time factor
+Sorting nodes link through suffix-links to each node in ST
+Cost for sorting all List_of_nodes_suffix_linked_to_me 190,801
+Finding base suffixes
+=== All base suffixes at each internal nodes in ST are as expected ===
+Total time cost: 1,000,879
+Finished in 0.95413 seconds
 
 ```
 
+----------------------------------------------------------- Running algorithms for finding base paths -----------------------------------------------------------
+
+The input for the tools is the converted fasta file. These tools are applicable for Hamming distance and Wildcards matching. Edit distance to be implemented.  
+
+Running command:
+```python
+python3 Finding_base_paths.py converted_fasta_file.oneline
+```
+
+A sample output:
+```
+Building Suffix Tree
+Finished in 0.342 seconds
+------------------------------------------------------------------------------------------
+Processing leaf and internal nodes
+Number of leaf nodes is 47,961
+Number of internal nodes is 31,627
+Number of alphabets in the input data 15
+Finished in 0.35491 seconds
+------------------------------------------------------------------------------------------
+Finding base paths using the proposed algorithm
+Indexing OSHR leaf nodes into a list from left to right
+Number of OSHR leaf_nodes is 12,029
+Number of OSHR internal nodes is 19,598
+In total of 31,627
+Cost for indexing OSHR leaf nodes into a list from left to right and sorting all List_of_nodes_suffix_linked_to_me: 190,801
+Finding base paths
+Number of OSHR leaf bottom base nodes for OSHR internal top base nodes 90,878
+Number of OSHR internal bottom base nodes for OSHR internal top base nodes 2,387
+Number of OSHR leaf bottom base nodes for OSHR leaf top base nodes 1,719
+Number of OSHR internal bottom base nodes for OSHR leaf top base nodes 1,905
+
+Total number of base paths 96,889
+Total time cost: 356,618
+Finished in 0.54863 seconds
+------------------------------------------------------------------------------------------
+Finding and checking base paths using the non-trivial algorithm
+=== All base paths at each internal nodes in ST are as expected ===
+Total time cost: 526,629
+Finished in 1.58355 seconds
+
+```
 
 For contact, please email AA.12682@KHCC.JO (the email of the first author Anas Al-okaily).
