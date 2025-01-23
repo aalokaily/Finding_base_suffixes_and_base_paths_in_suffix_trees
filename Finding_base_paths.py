@@ -317,7 +317,7 @@ print ("------------------------------------------------------------------------
     
 
 
-def Find_and_check_base_suffixes_using_non_trivial_algorithm(tree):
+def Find_and_check_base_paths_using_non_trivial_algorithm(tree):
     
     print ("Finding and checking base paths using the non-trivial algorithm")
 
@@ -388,7 +388,7 @@ def Find_and_check_base_suffixes_using_non_trivial_algorithm(tree):
     
     
 start = time.time()    
-Find_and_check_base_suffixes_using_non_trivial_algorithm(tree)
+Find_and_check_base_paths_using_non_trivial_algorithm(tree)
 print ("Finished in", round((time.time() - start), 5), "seconds")
    
 
