@@ -259,29 +259,18 @@ def Find_base_suffixes_using_linear_algorithm(tree):
                         cost += 1
                     
                     # collect bottom-base nodes collected from reference nodes if current_visited_node is List_of_reference_internal_nodes 
-                    inbetween_bottom_base_node_dict = defaultdict()  # this dict will be used to distinct nodes under tow difference reference nodes that are linking to the same node under current_visited_node                   
+                    inbetween_bottom_base_node_dict = defaultdict(int)  # this dict will be used to distinct nodes under tow difference reference nodes that are linking to the same node under current_visited_node                   
                     if hasattr(current_visited_node, "List_of_reference_internal_nodes"):
                         for reference_node in current_visited_node.List_of_reference_internal_nodes:
-                            inbetween_bottom_base_node_dict[reference_node._suffix_link] = reference_node._suffix_link
+                            inbetween_bottom_base_node_dict[reference_node._suffix_link] += 1
                             cost += 1
                             for node in get_internal_nodes(tree, reference_node):
-                                inbetween_bottom_base_node_dict[node._suffix_link] = node._suffix_link
+                                inbetween_bottom_base_node_dict[node._suffix_link] += 1
                                 cost += 1
                             
-                    for bottom_base_node in list(inbetween_bottom_base_node_dict.values()):
+                    for bottom_base_node in inbetween_bottom_base_node_dict:
                         cost += 1
-                        f = 0
-                        for node_with_suffix_link_to_current_visited_node in current_visited_node.List_of_nodes_suffix_linked_to_me:
-                            cost += int(math.log(len(bottom_base_node.List_of_nodes_suffix_linked_to_me_sorted_by_leaf_index_under_ST), 2))
-                            right_pos = bisect.bisect(bottom_base_node.List_of_nodes_suffix_linked_to_me_sorted_by_leaf_index_under_ST, (node_with_suffix_link_to_current_visited_node.index_of_rightmost_leaf_in_ST, node_with_suffix_link_to_current_visited_node.index_of_rightmost_leaf_in_ST)) # right_pos bcus we want to find node satisfies the condition starting_node.left_OT_index >= node.left_OT_index and starting_node.right_OT_index <= node.right_OT_index
-                            if right_pos != 0:
-                                right_pos = right_pos - 1
-                            node_with_suffix_link_to_bottom_base_node = bottom_base_node.List_of_nodes_suffix_linked_to_me_sorted_by_leaf_index_under_ST[right_pos][2]
-                            if node_with_suffix_link_to_current_visited_node.index_of_leftmost_leaf_in_ST <= node_with_suffix_link_to_bottom_base_node.index_of_leftmost_leaf_in_ST <= node_with_suffix_link_to_bottom_base_node.index_of_rightmost_leaf_in_ST <= node_with_suffix_link_to_current_visited_node.index_of_rightmost_leaf_in_ST:
-                                f = 1 # then it's already covered by previous base path
-                                break
-                                    
-                        if f == 0:
+                        if len(bottom_base_node.List_of_nodes_suffix_linked_to_me) == inbetween_bottom_base_node_dict[bottom_base_node]:
                             a2 += 1
                             current_visited_node.List_of_bottom_base_node.append(bottom_base_node)
                             base_paths_counter += 1
