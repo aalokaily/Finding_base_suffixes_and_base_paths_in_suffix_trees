@@ -160,7 +160,7 @@ def get_internal_nodes(tree, node):
 
 print ("Finding base paths using the proposed algorithm")
 
-def Find_base_suffixes_using_linear_algorithm(tree):
+def Find_base_paths_using_linear_algorithm(tree):
 
     print ("Indexing OSHR leaf nodes into a list from left to right")
     
@@ -300,7 +300,7 @@ def Find_base_suffixes_using_linear_algorithm(tree):
     
     
 start = time.time()
-Find_base_suffixes_using_linear_algorithm(tree)
+Find_base_paths_using_linear_algorithm(tree)
 print ("Finished in", round((time.time() - start), 5), "seconds")
 print ("------------------------------------------------------------------------------------------")
     
@@ -355,7 +355,6 @@ def Find_and_check_base_paths_using_non_trivial_algorithm(tree):
                                     d.append(internal_node)
                             else:
                                 d.append(internal_node)
-                                
                     else:
                         for internal_node in get_internal_nodes(tree, current_visited_node):
                             d.append(internal_node)
