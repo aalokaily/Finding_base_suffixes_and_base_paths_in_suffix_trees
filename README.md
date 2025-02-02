@@ -6,7 +6,7 @@ Suffix trees are fundamental data structure in stringology. We introduce two alg
 * Install bisect library from https://docs.python.org/3/library/bisect.html 
 
 * Install the following library that will be used to build suffix trees:
-https://github.com/ptrus/suffix-trees 
+https://github.com/ptrus/suffix-trees  
 
 Then edit ./suffix_trees/STree.py as the followings:
 
