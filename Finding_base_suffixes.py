@@ -1,7 +1,7 @@
 from suffix_trees import STree 
 from collections import defaultdict
 import time
-import math 
+import math
 import sys
 import bisect
 
