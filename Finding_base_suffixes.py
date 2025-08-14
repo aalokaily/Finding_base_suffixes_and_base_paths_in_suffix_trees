@@ -36,10 +36,10 @@ def process_leaf_and_internal_nodes(tree):
     
     setattr(tree, "number_leaf_nodes", 0)
     setattr(tree, "number_internal_nodes", 0)
-    setattr(tree, "List_of_left_to_right_suffix_indexes", []) # List S in the paper with minor modification
-    setattr(tree, "List_of_leaf_suffix_index_to_leaf_memory", []) # List M in the paper 
+    setattr(tree, "L", []) 
+    setattr(tree, "M", []) 
      
-    tree.List_of_leaf_suffix_index_to_leaf_memory = [-1] * len(tree.word)
+    tree.M = [-1] * len(tree.word)
     
     nodes_stack = []
     key_stack = []
@@ -67,8 +67,8 @@ def process_leaf_and_internal_nodes(tree):
                 tree.number_leaf_nodes += 1
                 
                 # creating auxiliary lists 
-                tree.List_of_leaf_suffix_index_to_leaf_memory[current_visited_node.idx] = current_visited_node
-                tree.List_of_left_to_right_suffix_indexes.append(current_visited_node.idx)
+                tree.M[current_visited_node.idx] = current_visited_node
+                tree.L.append(current_visited_node.idx)
                 
                 if not hasattr(current_visited_node.parent, "index_of_leftmost_leaf_in_ST"):
                     setattr(current_visited_node.parent, "index_of_leftmost_leaf_in_ST", current_visited_node.index_of_leaf_in_ST)
@@ -148,7 +148,7 @@ def Find_base_suffixes_using_linear_algorithm(tree):
             if current_visited_node.is_leaf():
                 if current_visited_node.idx + 1 < tree.number_leaf_nodes:
                     # this code computes base suffixes derived from reference leaf nodes. 
-                    leaf_node_of_next_suffix_index = tree.List_of_leaf_suffix_index_to_leaf_memory[current_visited_node.idx + 1]                                    
+                    leaf_node_of_next_suffix_index = tree.M[current_visited_node.idx + 1]                                    
                     if leaf_node_of_next_suffix_index.parent != current_visited_node.parent._suffix_link:
                         temp = leaf_node_of_next_suffix_index.parent
                         end_node = current_visited_node.parent._suffix_link
@@ -173,7 +173,7 @@ def Find_base_suffixes_using_linear_algorithm(tree):
                     temp = bottom_node.parent
                     while temp != top_node:
                         cost += 1
-                        for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
+                        for suffix_index_of_leaf_node in tree.L[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
                             temp.List_of_base_suffixes.append(suffix_index_of_leaf_node + 1 + temp.depth)
                             base_suffix_counter += 1
                         temp = temp.parent
@@ -187,7 +187,7 @@ def Find_base_suffixes_using_linear_algorithm(tree):
 
     # compute the case for suffix 0 as there is no previous index for index 0 
     cost += 1
-    temp = tree.List_of_leaf_suffix_index_to_leaf_memory[0]                                     
+    temp = tree.M[0]                                     
     while temp != tree.root:
         temp = temp.parent
         temp.List_of_base_suffixes.append(0 + temp.depth)
@@ -203,13 +203,13 @@ def Find_base_suffixes_using_linear_algorithm(tree):
         cost += 1
         if node.is_leaf():
             if node.idx + 1 < tree.number_leaf_nodes:
-                leaf_node_of_next_suffix_index = tree.List_of_leaf_suffix_index_to_leaf_memory[node.idx + 1]
+                leaf_node_of_next_suffix_index = tree.M[node.idx + 1]
                 if leaf_node_of_next_suffix_index.parent == tree.root:
                     current_visited_node.List_of_base_suffixes.append(leaf_node_of_next_suffix_index.idx)
                     base_suffix_counter += 1
         else:
             if node._suffix_link != tree.root:
-                for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[node.index_of_leftmost_leaf_in_ST:node.index_of_rightmost_leaf_in_ST + 1]:
+                for suffix_index_of_leaf_node in tree.L[node.index_of_leftmost_leaf_in_ST:node.index_of_rightmost_leaf_in_ST + 1]:
                     current_visited_node.List_of_base_suffixes.append(suffix_index_of_leaf_node + 1)
                     base_suffix_counter += 1
                     cost += 1
@@ -258,7 +258,7 @@ def Find_and_check_base_suffixes_using_non_trivial_algorithm1(tree):
             if not current_visited_node.is_leaf():
                 d = []
                 if hasattr(current_visited_node, "List_of_nodes_suffix_linked_to_me"):
-                    for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
+                    for suffix_index_of_leaf_node in tree.L[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
                         cost += 1
                         if suffix_index_of_leaf_node + current_visited_node.depth not in tree.All_base_suffixes_found_so_far:
                             d.append(suffix_index_of_leaf_node + current_visited_node.depth)
@@ -266,7 +266,7 @@ def Find_and_check_base_suffixes_using_non_trivial_algorithm1(tree):
                     
                 else:
                     setattr(current_visited_node, "All_suffixes_under_node", defaultdict())
-                    for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
+                    for suffix_index_of_leaf_node in tree.L[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
                         cost += 1
                         tree.All_base_suffixes_found_so_far[suffix_index_of_leaf_node + current_visited_node.depth] = 0
                         d.append(suffix_index_of_leaf_node + current_visited_node.depth)
@@ -363,10 +363,10 @@ def Find_and_check_base_suffixes_using_non_trivial_algorithm2(tree):
             if not current_visited_node.is_leaf():
                 d = []
                 if hasattr(current_visited_node, "List_of_nodes_suffix_linked_to_me"):
-                    for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
+                    for suffix_index_of_leaf_node in tree.L[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
                         cost += int(math.log(len(current_visited_node.List_of_nodes_suffix_linked_to_me_sorted_by_leaf_index_under_ST),2))
                         f = 0
-                        leaf_node_of_previous_suffix_index = tree.List_of_leaf_suffix_index_to_leaf_memory[suffix_index_of_leaf_node - 1]
+                        leaf_node_of_previous_suffix_index = tree.M[suffix_index_of_leaf_node - 1]
                         right_pos = bisect.bisect(current_visited_node.List_of_nodes_suffix_linked_to_me_sorted_by_leaf_index_under_ST, (leaf_node_of_previous_suffix_index.index_of_leaf_in_ST, leaf_node_of_previous_suffix_index.index_of_leaf_in_ST)) # right_pos bcus we want to find node satisfies the condition starting_node.left_OT_index >= node.left_OT_index and starting_node.right_OT_index <= node.right_OT_index
                         if right_pos == len(current_visited_node.List_of_nodes_suffix_linked_to_me_sorted_by_leaf_index_under_ST):
                             right_pos = right_pos - 1
@@ -383,7 +383,7 @@ def Find_and_check_base_suffixes_using_non_trivial_algorithm2(tree):
                             d.append(suffix_index_of_leaf_node + current_visited_node.depth)
                     
                 else:
-                    for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
+                    for suffix_index_of_leaf_node in tree.L[current_visited_node.index_of_leftmost_leaf_in_ST:current_visited_node.index_of_rightmost_leaf_in_ST + 1]:
                         cost += 1
                         d.append(suffix_index_of_leaf_node + current_visited_node.depth)
 
@@ -448,7 +448,7 @@ def Find_base_suffixes_using_linear_algorithm2(tree):
             if current_visited_node.is_leaf():
                 # this code to find reference leaf nodes
                 if current_visited_node.idx + 1 < tree.number_leaf_nodes:
-                    leaf_node_of_next_suffix_index = tree.List_of_leaf_suffix_index_to_leaf_memory[current_visited_node.idx + 1]                                    
+                    leaf_node_of_next_suffix_index = tree.M[current_visited_node.idx + 1]                                    
                     if leaf_node_of_next_suffix_index.parent != current_visited_node.parent._suffix_link:
                         n = leaf_node_of_next_suffix_index.parent
                         top_node = current_visited_node.parent._suffix_link
@@ -539,7 +539,7 @@ def Find_base_suffixes_using_linear_algorithm2(tree):
                 if hasattr(current_visited_node, "List_of_reference_internal_nodes"):
                     for reference_internal_node in current_visited_node.List_of_reference_internal_nodes:
                         cost += 1
-                        for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[reference_internal_node.index_of_leftmost_leaf_in_ST:reference_internal_node.index_of_rightmost_leaf_in_ST + 1]:
+                        for suffix_index_of_leaf_node in tree.L[reference_internal_node.index_of_leftmost_leaf_in_ST:reference_internal_node.index_of_rightmost_leaf_in_ST + 1]:
                             current_visited_node.List_of_base_suffixes.append(suffix_index_of_leaf_node + 1 + current_visited_node.depth)
                             base_suffix_counter += 1
                             cost += 1
@@ -547,7 +547,7 @@ def Find_base_suffixes_using_linear_algorithm2(tree):
 
     # compute the case for suffix 0 as there is no previous suffix index for index 0 
     cost += 1
-    temp = tree.List_of_leaf_suffix_index_to_leaf_memory[0]                                     
+    temp = tree.M[0]                                     
     while temp != tree.root:
         temp = temp.parent
         temp.List_of_base_suffixes.append(0 + temp.depth)
@@ -562,13 +562,13 @@ def Find_base_suffixes_using_linear_algorithm2(tree):
         cost += 1
         if node.is_leaf():
             if node.idx + 1 < tree.number_leaf_nodes:
-                leaf_node_of_next_suffix_index = tree.List_of_leaf_suffix_index_to_leaf_memory[node.idx + 1]
+                leaf_node_of_next_suffix_index = tree.M[node.idx + 1]
                 if leaf_node_of_next_suffix_index.parent == tree.root:
                     current_visited_node.List_of_base_suffixes.append(leaf_node_of_next_suffix_index.idx)
                     base_suffix_counter += 1
         else:
             if node._suffix_link != tree.root:
-                for suffix_index_of_leaf_node in tree.List_of_left_to_right_suffix_indexes[node.index_of_leftmost_leaf_in_ST:node.index_of_rightmost_leaf_in_ST + 1]:
+                for suffix_index_of_leaf_node in tree.L[node.index_of_leftmost_leaf_in_ST:node.index_of_rightmost_leaf_in_ST + 1]:
                     current_visited_node.List_of_base_suffixes.append(suffix_index_of_leaf_node + 1)
                     base_suffix_counter += 1
                     cost += 1
