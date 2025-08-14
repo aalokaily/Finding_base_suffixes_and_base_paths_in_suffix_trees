@@ -34,10 +34,7 @@ def process_leaf_and_internal_nodes(tree):
     
     setattr(tree, "number_leaf_nodes", 0)
     setattr(tree, "number_internal_nodes", 0)
-    setattr(tree, "List_of_leaf_suffix_index_to_leaf_memory", []) # List M in the paper
      
-    tree.List_of_leaf_suffix_index_to_leaf_memory = [-1] * len(tree.word)
-    
     nodes_stack = []
     key_stack = []
     children_stack = []
@@ -56,15 +53,11 @@ def process_leaf_and_internal_nodes(tree):
             children_stack.append((list(last_node_under_top_node_in_stack.transition_links[x] for x in sorted(last_node_under_top_node_in_stack.transition_links.keys(), reverse=True))))
                                       
         else:
-            setattr(current_visited_node, "OT_indexes", [])
             # alongside processing
             if current_visited_node.is_leaf():
                 # Assigning leaf nodes unique keys
                 current_visited_node.index_of_leaf_in_ST = tree.number_leaf_nodes                     
                 tree.number_leaf_nodes += 1
-                
-                # creating auxiliary lists 
-                tree.List_of_leaf_suffix_index_to_leaf_memory[current_visited_node.idx] = current_visited_node
                 
                 if not hasattr(current_visited_node.parent, "index_of_leftmost_leaf_in_ST"):
                     setattr(current_visited_node.parent, "index_of_leftmost_leaf_in_ST", current_visited_node.index_of_leaf_in_ST)
