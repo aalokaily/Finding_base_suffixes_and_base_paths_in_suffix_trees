@@ -59,7 +59,6 @@ def process_leaf_and_internal_nodes(tree):
             children_stack.append((list(last_node_under_top_node_in_stack.transition_links[x] for x in sorted(last_node_under_top_node_in_stack.transition_links.keys(), reverse=True))))
                                       
         else:
-            setattr(current_visited_node, "OT_indexes", [])
             # alongside processing
             if current_visited_node.is_leaf():
                 # Assigning leaf nodes unique keys
